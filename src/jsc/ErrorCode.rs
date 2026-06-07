@@ -679,9 +679,11 @@ impl ErrorCode {
     pub const SECRETS_AUTH_FAILED: ErrorCode = ErrorCode(310);
     /// `ERR_SECRETS_INTERACTION_REQUIRED` (instanceof Error)
     pub const SECRETS_INTERACTION_REQUIRED: ErrorCode = ErrorCode(311);
+    /// `ERR_IMPORT_ATTRIBUTE_UNSUPPORTED` (instanceof TypeError)
+    pub const IMPORT_ATTRIBUTE_UNSUPPORTED: ErrorCode = ErrorCode(312);
 
     /// == C++ `NODE_ERROR_COUNT`.
-    pub const COUNT: u16 = 312;
+    pub const COUNT: u16 = 313;
 }
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -819,6 +821,7 @@ impl ErrorCode {
     pub const ERR_HTTP2_UNSUPPORTED_PROTOCOL: ErrorCode = ErrorCode::HTTP2_UNSUPPORTED_PROTOCOL;
     pub const ERR_HTTP2_INVALID_SETTING_VALUE: ErrorCode = ErrorCode::HTTP2_INVALID_SETTING_VALUE;
     pub const ERR_ILLEGAL_CONSTRUCTOR: ErrorCode = ErrorCode::ILLEGAL_CONSTRUCTOR;
+    pub const ERR_IMPORT_ATTRIBUTE_UNSUPPORTED: ErrorCode = ErrorCode::IMPORT_ATTRIBUTE_UNSUPPORTED;
     pub const ERR_INCOMPATIBLE_OPTION_PAIR: ErrorCode = ErrorCode::INCOMPATIBLE_OPTION_PAIR;
     pub const ERR_INVALID_ADDRESS: ErrorCode = ErrorCode::INVALID_ADDRESS;
     pub const ERR_INVALID_ADDRESS_FAMILY: ErrorCode = ErrorCode::INVALID_ADDRESS_FAMILY;
@@ -1365,6 +1368,7 @@ static CODE_STR: [&str; ErrorCode::COUNT as usize] = [
     "ERR_SECRETS_INTERACTION_NOT_ALLOWED",
     "ERR_SECRETS_AUTH_FAILED",
     "ERR_SECRETS_INTERACTION_REQUIRED",
+    "ERR_IMPORT_ATTRIBUTE_UNSUPPORTED",
 ];
 
 // ──────────────────────────────────────────────────────────────────────────
