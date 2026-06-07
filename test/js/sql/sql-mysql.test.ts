@@ -285,6 +285,26 @@ if (isDockerEnabled()) {
             }
           });
 
+          test("prepared CALL with all-digit aliases differing only in leading zeros reports per-set names", async () => {
+            // All-digit column aliases parse to the same ColumnIdentifier::Index
+            // (`1` and `01` both become Index(1)), so name-change detection must
+            // key on the raw bytes, not the parsed identifier, for the cached
+            // metadata to be invalidated between equal-width result sets.
+            await using db = new SQL({ ...getOptions(), max: 1 });
+            using sql = await db.reserve();
+            const proc = "p_26809z_" + randomUUIDv7("hex").replaceAll("-", "");
+            await sql.unsafe(
+              `CREATE PROCEDURE ${proc}() BEGIN SELECT CAST(1 AS SIGNED) AS \`1\`; SELECT CAST(1 AS SIGNED) AS \`01\`; END`,
+            );
+            try {
+              const results = await sql`CALL ${sql(proc)}()`;
+              expect(results[0].columns[0].name).toBe("1");
+              expect(results[1].columns[0].name).toBe("01");
+            } finally {
+              await sql.unsafe(`DROP PROCEDURE IF EXISTS ${proc}`);
+            }
+          });
+
           test("multi-statement simple() with equal column counts gets per-result-set columns", async () => {
             // Consecutive result sets with the same column count re-decode into the
             // same ColumnDefinition41 slots; the cached statement metadata must be

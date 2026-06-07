@@ -139,6 +139,10 @@ impl ColumnDefinition41 {
         let name = reader.encode_len_string()?;
         if self.name.slice() != name.slice() {
             self.name = Data::create(name.slice()).map_err(|_| AnyMySQLError::OutOfMemory)?;
+            // The raw name is surfaced verbatim in `result.columns[i].name`; the
+            // `name_or_index` comparison below can miss byte-level changes
+            // (all-digit aliases collapse to the same `Index`, e.g. `1` vs `01`).
+            changed = true;
         }
         bun_core::scoped_log!(ColumnDefinition41, "name: {}", BStr::new(self.name.slice()));
 
