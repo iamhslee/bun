@@ -120,8 +120,7 @@ impl ColumnDefinition41 {
         // `name_or_index` elision below (test/regression/issue/28632).
         let table = reader.encode_len_string()?;
         if self.table.slice() != table.slice() {
-            self.table =
-                Data::create(table.slice()).map_err(|_| AnyMySQLError::OutOfMemory)?;
+            self.table = Data::create(table.slice()).map_err(|_| AnyMySQLError::OutOfMemory)?;
             changed = true;
         }
         bun_core::scoped_log!(
