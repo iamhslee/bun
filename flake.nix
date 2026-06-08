@@ -54,7 +54,7 @@
           # Bun itself (for running build scripts via `bun bd`)
           pkgs.bun
 
-          # Node.js - version pinned to 24
+          # Node.js - version pinned to 26
           nodejs
 
           # Python for build scripts

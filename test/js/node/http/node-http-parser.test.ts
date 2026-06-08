@@ -270,6 +270,10 @@ describe("parserOnHeaders maxHeaderPairs clamp (nodejs/node#61285)", () => {
       parser.maxHeaderPairs = 0;
       onHeaders.call(parser, ["c", "4"], "");
       expect(parser._headers).toEqual(["x", "1", "a", "2", "c", "4"]);
+
+      parser.maxHeaderPairs = -1;
+      onHeaders.call(parser, ["d", "5"], "");
+      expect(parser._headers).toEqual(["x", "1", "a", "2", "c", "4", "d", "5"]);
     } finally {
       parser.close();
     }

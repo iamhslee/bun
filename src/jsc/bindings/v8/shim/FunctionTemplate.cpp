@@ -82,7 +82,11 @@ JSC::EncodedJSValue FunctionTemplate::functionCall(JSC::JSGlobalObject* globalOb
     // relative to the argc slot. The view starts one slot into the array so
     // that kNewTargetIndex (-1) stays in bounds.
     using Info = FunctionCallbackInfo<Value>;
+    // One slot below the view base: kNewTargetIndex is the only negative
+    // index, so the buffer needs exactly that much headroom before it.
     constexpr size_t viewOffset = 1;
+    static_assert(viewOffset + Info::kNewTargetIndex == 0,
+        "viewOffset must cover the most negative FunctionCallbackInfo index");
     const size_t argc = callFrame->argumentCount();
     WTF::Vector<TaggedPointer, 27> frame(viewOffset + Info::kFirstJSArgumentIndex + argc);
     auto slot = [&](ptrdiff_t index) -> TaggedPointer& {

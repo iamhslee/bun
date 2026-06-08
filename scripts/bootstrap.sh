@@ -1,5 +1,5 @@
 #!/bin/sh
-# Version: 36
+# Version: 37
 
 # A script that installs the dependencies needed to build and test Bun.
 # This should work on macOS and Linux with a POSIX shell.
@@ -1785,7 +1785,9 @@ install_chromium() {
 		# test/harness.ts getPuppeteerInstallEnv).
 		if [ "$arch" = "x64" ]; then
 			chrome_deb=$(download_file "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb")
-			execute_sudo apt-get install -y "$chrome_deb" || execute_sudo dpkg -i "$chrome_deb" || true
+			# Best-effort: execute_sudo aborts the whole script on failure, so the
+			# fallback chain must run inside a single sudo'd shell.
+			execute_sudo sh -c "apt-get install -y '$chrome_deb' || dpkg -i '$chrome_deb' || true"
 		fi
 		;;
 	dnf | yum)

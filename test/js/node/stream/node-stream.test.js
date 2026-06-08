@@ -897,6 +897,18 @@ describe("node v26 stream semantics", () => {
     expect(err?.code).toBe("ERR_INVALID_ARG_TYPE");
   });
 
+  it("compose with an already-aborted signal errors the composed stream", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const composed = Readable.from(["a"]).compose(new PassThrough(), { signal: controller.signal });
+    const { promise, resolve } = Promise.withResolvers();
+    composed.on("error", resolve);
+    composed.resume();
+    const err = await promise;
+    expect(err.name).toBe("AbortError");
+    expect(err.code).toBe("ABORT_ERR");
+  });
+
   // Upstream: v26 test-stream-writable-decoded-encoding.js.
   it("write(string, 'buffer') throws ERR_UNKNOWN_ENCODING", () => {
     for (const opts of [{ decodeStrings: false }, {}]) {

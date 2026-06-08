@@ -4059,7 +4059,10 @@ class ClientHttp2Session extends Http2Session {
       process.nextTick(emitEventNT, req, "ready");
       return req;
     } catch (e: any) {
-      this.#connections--;
+      // #connections is incremented by the parser's streamStart callback, which
+      // never ran for a request that threw during validation — decrementing here
+      // would drive the counter negative and stop a closing session from ever
+      // reaching the #connections === 0 destroy.
       process.nextTick(emitErrorNT, this, e, this.#connections === 0 && this.#closed);
       throw e;
     }
