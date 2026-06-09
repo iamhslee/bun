@@ -1,12 +1,13 @@
 import { spawn, spawnSync } from "bun";
 import { beforeAll, expect, it } from "bun:test";
 import { existsSync } from "fs";
-import { bunEnv, bunExe } from "harness";
+import { bunEnv, bunExe, canBuildNodeAddons } from "harness";
 import { join } from "path";
 
 const addonPath = join(__dirname, "napi-app/build/Debug/test_delete_ref_in_finalizer_experimental.node");
 
 beforeAll(() => {
+  if (!canBuildNodeAddons()) return;
   // Build the native addons in napi-app, but only if the one this test needs
   // is missing (napi.test.ts or a previous run usually has built it already).
   // The addon doesn't link against bun, so an existing binary stays valid
@@ -33,7 +34,7 @@ beforeAll(() => {
   }
 }, 300_000);
 
-it("napi_delete_reference can be called from finalizers during GC in experimental modules", async () => {
+it.skipIf(!canBuildNodeAddons())("napi_delete_reference can be called from finalizers during GC in experimental modules", async () => {
   // Finalizers in NAPI_VERSION_EXPERIMENTAL modules run synchronously while
   // the garbage collector is sweeping. Unlike napi_reference_unref (which
   // really is forbidden there, see "napi_reference_unref is blocked from
