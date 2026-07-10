@@ -494,8 +494,6 @@ pub mod virtual_machine_exports;
 #[path = "host_fn.rs"] pub mod host_fn;
 #[path = "AnyPromise.rs"]
 pub mod any_promise;
-#[path = "javascript_core_c_api.rs"]
-pub mod c_api;
 #[path = "CachedBytecode.rs"]
 pub mod cached_bytecode;
 #[path = "DeferredError.rs"]
@@ -1564,9 +1562,7 @@ pub type PlatformEventLoop = bun_uws::Loop;
 #[cfg(not(unix))]
 pub type PlatformEventLoop = bun_io::Loop;
 
-pub use self::c_api as C;
-/// Legacy lower-case alias.
-pub use self::c_api as c;
+pub use self::array_buffer::JSTypedArrayBytesDeallocator;
 /// Deprecated: Remove all of these please.
 pub use self::sizes as Sizes;
 /// Deprecated: Use `bun_core::ZigString`
@@ -1635,7 +1631,7 @@ pub use self::Node as node;
 #[track_caller]
 #[inline]
 pub fn mark_binding() {
-    if cfg!(debug_assertions) && bun_core::Global::JSC_SCOPE.is_visible() {
+    if bun_core::env::IS_DEBUG && bun_core::Global::JSC_SCOPE.is_visible() {
         let loc = core::panic::Location::caller();
         bun_core::Global::JSC_SCOPE.log(format_args!("[jsc] ({}:{})\n", loc.file(), loc.line()));
     }
@@ -1644,7 +1640,7 @@ pub fn mark_binding() {
 /// Like [`mark_binding`], with a class-name prefix.
 #[inline]
 pub fn mark_member_binding(class: &'static str, src: &core::panic::Location<'static>) {
-    if cfg!(debug_assertions) && bun_core::Global::JSC_SCOPE.is_visible() {
+    if bun_core::env::IS_DEBUG && bun_core::Global::JSC_SCOPE.is_visible() {
         bun_core::Global::JSC_SCOPE.log(format_args!(
             "[jsc] {} ({}:{})\n",
             class,
